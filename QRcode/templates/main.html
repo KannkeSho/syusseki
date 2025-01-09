@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRコードリーダー</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #qr-result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+        }
+        #qr-loading {
+            margin-top: 20px;
+            font-size: 18px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>QRコードリーダー</h1>
+    <p>項目を選択してQRコードを読み取ります。</p>
+
+    <!-- ラジオボタンで科目を選択 -->
+    <div>
+        <label>
+            <input type="radio" name="subject" value="kokugo" checked>
+            国語
+        </label>
+        <label>
+            <input type="radio" name="subject" value="sannsuu">
+            算数
+        </label>
+    </div>
+
+    <!-- QRコードの読み取り結果表示 -->
+    <button id="read-qr-btn">QRコードを読み取る</button>
+    <div id="qr-result">QRコードの読み取り結果: 取得中...</div>
+    <div id="qr-loading"></div>
+
+    <script>
+        // QRコードを読み取る処理
+        document.getElementById('read-qr-btn').addEventListener('click', function() {
+            const selectedSubject = document.querySelector('input[name="subject"]:checked').value;
+
+            fetch(`/read_qr?subject=${selectedSubject}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('出席が完了しました！');
+                    } else {
+                        alert('エラーが発生しました！もう１度お願いします。');
+                    }
+
+                    const resultDiv = document.getElementById('qr-result');
+                    resultDiv.textContent = 'QRコードの読み取り結果: ' + (data.qr_data || 'なし');
+                })
+                .catch(error => {
+                    console.error('エラー:', error);
+                    alert('エラーが発生しました！もう１度お願いします。');
+                });
+        });
+
+        
+    </script>
+</body>
+</html>
